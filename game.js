@@ -16,8 +16,8 @@ resizeCanvas();
 window.addEventListener("resize", resizeCanvas);
 
 // ==================== 物理常量 & 配置 ====================
-const K = 3000;            // 库仑常数（缩放适配像素坐标）
-const MU0 = 800;           // 磁常数（缩放适配像素坐标）
+const K = 300000;            // 库仑常数（缩放适配像素坐标）
+const MU0 = 15000;           // 磁常数（缩放适配像素坐标）
 const DT = 0.016;          // 物理时间步长 (~60fps)
 const SOFTENING = 100;     // 力软化半径平方（防奇点）
 const DAMPING = 0.995;     // 速度阻尼
@@ -4417,5 +4417,40 @@ function loop() {
 }
 
 // ==================== 启动 ====================
+// 初始放置几个电荷，提供一个有趣的起点
+(function initScene() {
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+
+    // 中心大正电荷（固定）
+    charges.push(new Charge(cx, cy, 5, true));
+
+    // 环绕的负电荷（自由运动）
+    const nOrbits = 4;
+    for (let i = 0; i < nOrbits; i++) {
+        const ang = (i / nOrbits) * Math.PI * 2 + Math.random() * 0.3;
+        const r = 150 + Math.random() * 50;
+        const c = new Charge(
+            cx + Math.cos(ang) * r,
+            cy + Math.sin(ang) * r,
+            -1
+        );
+        c.vx = Math.sin(ang) * 20;
+        c.vy = -Math.cos(ang) * 20;
+        charges.push(c);
+    }
+
+    // 外围几个固定正电荷形成电场迷宫感
+    for (let i = 0; i < 3; i++) {
+        const ang = (i / 3) * Math.PI * 2 + 0.5;
+        charges.push(new Charge(
+            cx + Math.cos(ang) * 280,
+            cy + Math.sin(ang) * 280,
+            3,
+            true
+        ));
+    }
+})();
+
 setTool("charge-positive");
 loop();
