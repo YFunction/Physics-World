@@ -1,0 +1,279 @@
+/* ============================================
+   电磁学物理沙盒《场》— 阶段一+二+三
+   ============================================ */
+
+* {
+    box-sizing: border-box;
+    user-select: none;
+}
+
+body {
+    margin: 0;
+    overflow: hidden;
+    background: #0a0d14;
+    color: #c8d6e5;
+    font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+    font-size: 13px;
+}
+
+#canvas {
+    display: block;
+    cursor: crosshair;
+}
+
+/* ---- 顶部工具栏 ---- */
+#toolbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px 14px;
+    background: linear-gradient(180deg,
+        rgba(16,19,26,0.97) 0%,
+        rgba(16,19,26,0.85) 100%);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.tool-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0 8px;
+    border-right: 1px solid rgba(255,255,255,0.1);
+}
+
+.tool-group:last-child {
+    border-right: none;
+}
+
+.group-label {
+    font-size: 11px;
+    color: #5a6a7e;
+    margin-right: 4px;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tool-btn {
+    padding: 6px 12px;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 6px;
+    background: rgba(255,255,255,0.04);
+    color: #a0b0c0;
+    cursor: pointer;
+    font-size: 12px;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+}
+
+.tool-btn:hover {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    border-color: rgba(255,255,255,0.25);
+}
+
+.tool-btn.active {
+    background: rgba(64,120,220,0.3);
+    border-color: rgba(64,120,220,0.6);
+    color: #6ea8fe;
+    box-shadow: 0 0 8px rgba(64,120,220,0.2);
+}
+
+.tool-btn.danger {
+    border-color: rgba(220,64,64,0.3);
+}
+
+.tool-btn.danger:hover {
+    background: rgba(220,64,64,0.2);
+    color: #ff6b6b;
+}
+
+.toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: #7a8a9a;
+    cursor: pointer;
+}
+
+.toggle-label input[type="checkbox"] {
+    accent-color: #4078dc;
+    cursor: pointer;
+}
+
+/* ---- 底部状态栏 ---- */
+#statusBar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 16px;
+    background: rgba(10,13,20,0.9);
+    backdrop-filter: blur(6px);
+    border-top: 1px solid rgba(255,255,255,0.06);
+    font-size: 12px;
+    color: #5a6a7e;
+}
+
+#statusBar span {
+    margin-right: 20px;
+}
+
+/* ---- 属性面板 ---- */
+#propertyPanel {
+    position: absolute;
+    top: 120px;
+    right: 14px;
+    z-index: 110;
+    width: 220px;
+    background: rgba(16,19,26,0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 10px;
+    padding: 0;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+
+#propertyPanel.hidden {
+    display: none;
+}
+
+.panel-header {
+    padding: 10px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #6ea8fe;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    letter-spacing: 0.5px;
+}
+
+.panel-content {
+    padding: 10px 14px;
+}
+
+.prop-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    font-size: 12px;
+}
+
+.prop-row label {
+    width: 36px;
+    color: #7a8a9a;
+    flex-shrink: 0;
+}
+
+.prop-row input[type="range"] {
+    flex: 1;
+    accent-color: #4078dc;
+    height: 4px;
+}
+
+.prop-row input[type="checkbox"] {
+    accent-color: #4078dc;
+}
+
+.prop-row span {
+    width: 32px;
+    text-align: right;
+    color: #a0b0c0;
+    font-variant-numeric: tabular-nums;
+}
+
+.danger-btn {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid rgba(220,64,64,0.3);
+    border-radius: 6px;
+    background: rgba(220,64,64,0.1);
+    color: #ff6b6b;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.15s ease;
+}
+
+.danger-btn:hover {
+    background: rgba(220,64,64,0.25);
+}
+
+/* ---- 预置场景面板 ---- */
+#presetPanel {
+    position: absolute;
+    top: 120px;
+    left: 14px;
+    z-index: 110;
+    width: 160px;
+    background: rgba(16,19,26,0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 10px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+
+#presetPanel .panel-header {
+    text-align: center;
+}
+
+.preset-btn {
+    display: block;
+    width: calc(100% - 16px);
+    margin: 6px 8px;
+    padding: 8px;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 6px;
+    background: rgba(255,255,255,0.03);
+    color: #a0b0c0;
+    cursor: pointer;
+    font-size: 12px;
+    text-align: left;
+    transition: all 0.15s ease;
+}
+
+.preset-btn:hover {
+    background: rgba(64,120,220,0.15);
+    border-color: rgba(64,120,220,0.3);
+    color: #fff;
+}
+
+.preset-btn.stage3 {
+    border-left: 2px solid rgba(200, 100, 255, 0.4);
+}
+
+.preset-btn.stage3:hover {
+    background: rgba(180, 80, 220, 0.15);
+    border-color: rgba(180, 80, 220, 0.3);
+}
+
+.preset-btn:last-child {
+    margin-bottom: 10px;
+}
+
+/* ---- 滚动条 ---- */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.1);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.2);
+}

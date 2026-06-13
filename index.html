@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>电磁学物理沙盒《场》— 阶段一+二+三：静电+磁场+时变场</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- 顶部工具栏 -->
+<div id="toolbar">
+    <div class="tool-group">
+        <span class="group-label">电荷源</span>
+        <button id="btnPositive" class="tool-btn active" data-tool="charge-positive">＋正电荷</button>
+        <button id="btnNegative" class="tool-btn" data-tool="charge-negative">−负电荷</button>
+        <button id="btnPlate" class="tool-btn" data-tool="plate">⎔ 带电平板</button>
+    </div>
+
+    <div class="tool-group">
+        <span class="group-label">导体/绝缘体</span>
+        <button id="btnMetalBall" class="tool-btn" data-tool="metal-ball">● 金属球</button>
+        <button id="btnInsulator" class="tool-btn" data-tool="insulator">◇ 绝缘块</button>
+    </div>
+
+    <div class="tool-group">
+        <span class="group-label">磁源</span>
+        <button id="btnBarMagnet" class="tool-btn" data-tool="bar-magnet">🧲 条形磁铁</button>
+        <button id="btnElectromagnet" class="tool-btn" data-tool="electromagnet">🔄 电磁铁</button>
+        <button id="btnHelmholtz" class="tool-btn" data-tool="helmholtz">◎ 亥姆霍兹线圈</button>
+        <button id="btnRectBField" class="tool-btn" data-tool="rect-bfield">⬜ 方形B场</button>
+        <button id="btnCircleBField" class="tool-btn" data-tool="circle-bfield">🔵 圆形B场</button>
+        <button id="btnIronCore" class="tool-btn" data-tool="iron-core">▣ 铁芯</button>
+    </div>
+
+    <div class="tool-group">
+        <span class="group-label">探针</span>
+        <button id="btnEProbe" class="tool-btn" data-tool="eprobe">↗ 电场探针</button>
+        <button id="btnVProbe" class="tool-btn" data-tool="vprobe">Ⓥ 电势探针</button>
+        <button id="btnBProbe" class="tool-btn" data-tool="bprobe">🧭 磁场探针</button>
+    </div>
+
+    <div class="tool-group">
+        <span class="group-label">时变场</span>
+        <button id="btnOscEDipole" class="tool-btn" data-tool="osc-edipole">↯ 交变电偶极</button>
+        <button id="btnOscMDipole" class="tool-btn" data-tool="osc-mdipole">↻ 交变磁偶极</button>
+        <button id="btnTVEField" class="tool-btn" data-tool="tvefield">⬚ 时变E场区</button>
+        <button id="btnTVBField" class="tool-btn" data-tool="tvbfield">⬚ 时变B场区</button>
+        <button id="btnEddyRing" class="tool-btn" data-tool="eddy-ring">◯ 涡流环</button>
+        <button id="btnPolarDisk" class="tool-btn" data-tool="polar-disk">◉ 极化涡旋盘</button>
+    </div>
+
+    <div class="tool-group">
+        <span class="group-label">感生探针</span>
+        <button id="btnInducedProbe" class="tool-btn" data-tool="induced-probe">⚡ 感生场探针</button>
+        <button id="btnDispProbe" class="tool-btn" data-tool="disp-probe">∂E/∂t 探针</button>
+        <button id="btnFluxProbe" class="tool-btn" data-tool="flux-probe">dΦ/dt 探针</button>
+    </div>
+
+    <div class="tool-group">
+        <span class="group-label">控制</span>
+        <button id="btnPause" class="tool-btn">⏯ 暂停</button>
+        <button id="btnClear" class="tool-btn">✕ 清空</button>
+    </div>
+
+    <div class="tool-group">
+        <span class="group-label">显示</span>
+        <label class="toggle-label">
+            <input type="checkbox" id="toggleField" checked> 电场线
+        </label>
+        <label class="toggle-label">
+            <input type="checkbox" id="toggleEquipotential" checked> 等势面
+        </label>
+        <label class="toggle-label">
+            <input type="checkbox" id="toggleBField" checked> 磁感线
+        </label>
+        <label class="toggle-label">
+            <input type="checkbox" id="toggleInducedField" checked> 涡旋场
+        </label>
+        <label class="toggle-label">
+            <input type="checkbox" id="toggleGrid" checked> 网格
+        </label>
+    </div>
+</div>
+
+<!-- 底部信息栏 -->
+<div id="statusBar">
+    <span id="info">就绪 | 电荷数量: 0</span>
+    <span id="probeInfo"></span>
+    <span id="toolInfo">当前工具: 正电荷 — 点击画布放置</span>
+</div>
+
+<!-- 侧边属性面板（选中物体时显示） -->
+<div id="propertyPanel" class="hidden">
+    <div class="panel-header">物体属性</div>
+    <div class="panel-content">
+        <div class="prop-row">
+            <label>类型:</label>
+            <span id="propType">-</span>
+        </div>
+        <div class="prop-row" id="rowCharge">
+            <label>电量:</label>
+            <input type="range" id="propCharge" min="-10" max="10" step="0.1" value="1">
+            <span id="propChargeVal">1.0</span>
+        </div>
+        <div class="prop-row" id="rowStrength">
+            <label>强度:</label>
+            <input type="range" id="propStrength" min="0.1" max="10" step="0.1" value="3">
+            <span id="propStrengthVal">3.0</span>
+        </div>
+        <div class="prop-row" id="rowCurrent">
+            <label>电流:</label>
+            <input type="range" id="propCurrent" min="-10" max="10" step="0.1" value="3">
+            <span id="propCurrentVal">3.0</span>
+        </div>
+        <div class="prop-row" id="rowFixed">
+            <label>固定:</label>
+            <input type="checkbox" id="propFixed">
+        </div>
+        <div class="prop-row" id="rowMass">
+            <label>质量:</label>
+            <input type="range" id="propMass" min="0.1" max="10" step="0.1" value="1">
+            <span id="propMassVal">1.0</span>
+        </div>
+        <div class="prop-row" id="rowAngle">
+            <label>角度:</label>
+            <input type="range" id="propAngle" min="-180" max="180" step="1" value="0">
+            <span id="propAngleVal">0°</span>
+        </div>
+        <button id="btnDelete" class="danger-btn">删除物体</button>
+    </div>
+</div>
+
+<!-- 预置场景面板 -->
+<div id="presetPanel">
+    <div class="panel-header">实验模板</div>
+    <button class="preset-btn" data-preset="pendulum">🔬 静电摆</button>
+    <button class="preset-btn" data-preset="hovercraft">🛸 电荷飞船</button>
+    <button class="preset-btn" data-preset="maze">🧩 电场迷宫</button>
+    <button class="preset-btn" data-preset="trap">🪤 静电陷阱</button>
+    <button class="preset-btn magnetic" data-preset="cyclotron">🔄 回旋运动</button>
+    <button class="preset-btn magnetic" data-preset="velocity-selector">🎯 速度选择器</button>
+    <button class="preset-btn magnetic" data-preset="maglev">🪶 磁悬浮陀螺</button>
+    <button class="preset-btn magnetic" data-preset="crt">📺 阴极射线管</button>
+    <button class="preset-btn stage3" data-preset="induction-ring">💫 感应加速环</button>
+    <button class="preset-btn stage3" data-preset="disp-mirror">🪞 位移电流镜</button>
+    <button class="preset-btn stage3" data-preset="field-resonator">📡 场耦合谐振</button>
+</div>
+
+<canvas id="canvas"></canvas>
+
+<script src="game.js"></script>
+</body>
+</html>
